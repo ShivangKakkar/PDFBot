@@ -17,7 +17,6 @@ async def _callbacks(bot: Client, callback_query: CallbackQuery):
         user = await bot.get_me()
         output_prefix = f"{directory}/{user_id}_"
         mention = user["mention"]
-        pdf = await get_pdf(user_id)
         query = callback_query.data.lower()
         if query.startswith("home"):
             if query == 'home':
@@ -73,6 +72,7 @@ async def _callbacks(bot: Client, callback_query: CallbackQuery):
             direction = direction.text.lower()
             output = output_prefix+"rotate.pdf"
             await callback_query.answer("Sending Rotated PDF...")
+            pdf = await get_pdf(user_id)
             if pages == "all":
                 await rotate_pdf(pdf, output, direction)
             else:
