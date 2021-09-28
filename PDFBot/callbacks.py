@@ -2,9 +2,17 @@ import os
 import shutil
 from asyncio.exceptions import TimeoutError
 from Data import Data
+import warnings
 from pyrogram import Client, filters
 from pyrogram.types import CallbackQuery, InlineKeyboardMarkup
-from PDFBot.core import encrypt_pdf, decrypt_pdf, rotate_pdf, merge_pdfs
+from PDFBot.core import (
+    encrypt_pdf,
+    decrypt_pdf,
+    rotate_pdf,
+    merge_pdfs,
+    extract_text,
+    split_pdf
+)
 from PDFBot.main import merging
 
 
@@ -13,6 +21,7 @@ from PDFBot.main import merging
 async def _callbacks(bot: Client, callback_query: CallbackQuery):
     user_id = callback_query.from_user.id
     directory = f"downloads/{user_id}"
+    warnings.filterwarnings("ignore")  # Too much warnings
     try:
         user = await bot.get_me()
         output_prefix = f"{directory}/{user_id}_"
@@ -135,9 +144,62 @@ async def _callbacks(bot: Client, callback_query: CallbackQuery):
                 else:
                     pdf_msg = await bot.ask(user_id, 'Please send more PDFs or press /merge. \n\nUse /cancel to cancel.')
             merging[user_id] = False
+        elif query == "extract":
+            await callback_query.answer()
+            pages_text = "Please give me the pages numbers from which you want to extract text. Separate multiple numbers by space. \n\nExample: '1 4 10' or '34 78 93 100'"
+            pages = await bot.ask(user_id, pages_text)
+            while True:
+                numbers = pages.text.split()
+                numbers = [int(page) for page in numbers if page.isdigit()]
+                if not numbers:
+                    pages = await bot.ask(user_id, "Wrong Format. \n\nPlease send again now.", reply_to_message_id=pages.message_id)
+                else:
+                    break
+            if await cancelled(pages):
+                return
+            pdf = await get_pdf(user_id)
+            for number in numbers:
+                text = await extract_text(pdf, number)
+                if len(text) >= 4096:
+                    texts = [text[i:i+4096] for i in range(0, len(text), 4096)]
+                    for text in texts:
+                        await callback_query.message.reply(text)
+                else:
+                    await callback_query.message.reply(text)
+        elif query == "split":
+            await callback_query.answer()
+            pages_text = "Please give me the pages which will be used to split pdf. Separate multiple numbers by space. \n\nEvery number you give will be first page of a new pdf. \n\nExample if you gave '4 10 19' then I'll split the PDF into 4 PDFs. First PDF with pages 1-3, second with 4-9, third with 10-18 and 4th with 19 till end."
+            pages = await bot.ask(user_id, pages_text)
+            while True:
+                numbers = pages.text.split()
+                numbers = [int(page) for page in numbers if page.isdigit()]
+                if not numbers:
+                    pages = await bot.ask(user_id, "Wrong Format. \n\nPlease send again now.", reply_to_message_id=pages.message_id)
+                else:
+                    break
+            if await cancelled(pages):
+                return
+            pdf = await get_pdf(user_id)
+            output_prefix = f"{directory}/Split File "
+            files = await split_pdf(pdf, output_prefix, numbers)
+            if not files:
+                await callback_query.message.reply("A provided page number doesn't exist. Cancelling.")
+                shutil.rmtree(directory, ignore_errors=True)
+                return
+            for file in files:
+                pages = files[file]
+                if len(pages) == 0:
+                    await callback_query.message.reply("A provided page number doesn't exist. Cancelling.")
+                else:
+                    to = f"{pages[0]} to {pages[-1]}" if not len(pages) == 1 else pages[0]
+                    caption = f"Split File {list(files.keys()).index(file)+1} \n\nPages {to} \nTotal Pages : {len(pages)} \n\nBy @StarkBots"
+                    await callback_query.message.reply_document(file, caption=caption)
     except TimeoutError:
         merging[user_id] = False
         pass
+    except FileNotFoundError:
+        await callback_query.message.reply("Please send me the file again as it doesn't exist now.")
+        await callback_query.message.delete()
     shutil.rmtree(directory, ignore_errors=True)
 
 

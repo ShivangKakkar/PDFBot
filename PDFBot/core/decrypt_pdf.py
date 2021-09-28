@@ -14,6 +14,3 @@ async def decrypt_pdf(path, output, password: str):
         return True
     except PdfReadError:
         return False
-
-
-# decrypt_pdf("encrypted.pdf", "encrypted2.pdf", "dam")

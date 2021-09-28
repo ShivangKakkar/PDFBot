@@ -8,7 +8,7 @@ def extract_info(path):
         try:
             number_of_pages = pdf.getNumPages()
         except PdfReadError:
-            return "Encrypted File"
+            return "This is an Encrypted File. \n\nYou can't act on it until it's decrypted. \n\nDecrypt it first and then send the decrypted file back!"
         information = pdf.getDocumentInfo()
     info = ''
     if information.title:
@@ -24,6 +24,3 @@ def extract_info(path):
     if information.subject:
         info += f"\n**Subject:** {information.subject}"
     return info
-
-
-# extract_info("sample.pdf")

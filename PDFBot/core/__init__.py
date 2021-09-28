@@ -4,3 +4,5 @@ from .extract_info import extract_info
 from .image_to_pdf import images_to_pdf
 from .merge_pdfs import merge_pdfs
 from .rotate_pdf import rotate_pdf
+from .extract_text import extract_text
+from .split_pdf import split_pdf

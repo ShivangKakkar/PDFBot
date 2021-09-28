@@ -9,6 +9,3 @@ async def encrypt_pdf(path, output, password: str):
     writer.encrypt(user_pwd=password)
     with open(output, 'wb') as f:
         writer.write(f)
-
-
-# encrypt_pdf("encrypted.pdf", "encrypted2.pdf", "hotdamn")

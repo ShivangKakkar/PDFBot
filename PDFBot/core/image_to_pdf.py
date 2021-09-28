@@ -10,6 +10,3 @@ async def images_to_pdf(paths, output):
     first = image_list[0]
     image_list.pop(0)
     first.save(output, resolution=100.0, save_all=True, append_images=image_list)
-
-
-# images_to_pdf(["Ariana.jpeg", "AlanWalker.jpg", "Devil.jpg", "MUB.jpg", "Romeo.jpg"], "duh.pdf")

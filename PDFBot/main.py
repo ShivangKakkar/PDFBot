@@ -4,7 +4,6 @@ from pyrogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup
 from PyPDF2.pdf import PdfFileReader
 import warnings
 
-
 merging = {}
 
 
@@ -22,15 +21,24 @@ async def main(_, msg: Message):
     info = extract_info(pdf)
     buttons = [
         [InlineKeyboardButton("Rotate PDF", callback_data="rotate")],
+        [InlineKeyboardButton("Merge PDFs", callback_data="merge")],
+        [InlineKeyboardButton("Extract Text from PDF", callback_data="extract")],
+        [InlineKeyboardButton("Split PDF", callback_data="split")]
     ]
     if pdf_object.isEncrypted:
-        buttons.append([InlineKeyboardButton("Decrypt PDF", callback_data="decrypt")])
+        buttons = [[InlineKeyboardButton("Decrypt PDF", callback_data="decrypt")]]
     else:
-        buttons.append([InlineKeyboardButton("Encrypt PDF", callback_data="encrypt")])
-    buttons.append([InlineKeyboardButton("Merge PDFs", callback_data="merge")])
+        buttons.insert(0, [InlineKeyboardButton("Encrypt PDF", callback_data="encrypt")])
     await status.delete()
-    await msg.reply(
-        f"**PDF Information** \n\n{info} \n\nUse below buttons to act on the pdf file.",
-        reply_markup=InlineKeyboardMarkup(buttons),
-        quote=True
-    )
+    if "decrypted file back" in info:
+        await msg.reply(
+            f"**Encrypted File** \n\n{info} \n\nUse below button to decrypt the pdf file.",
+            reply_markup=InlineKeyboardMarkup(buttons),
+            quote=True
+        )
+    else:
+        await msg.reply(
+            f"**PDF Information** \n\n{info} \n\nUse below buttons to act on the pdf file.",
+            reply_markup=InlineKeyboardMarkup(buttons),
+            quote=True
+        )

@@ -9,6 +9,3 @@ async def merge_pdfs(paths, output):
             writer.addPage(reader.getPage(num))
     with open(output, 'wb') as f:
         writer.write(f)
-
-
-# merge_pdfs(["sample.pdf", "sample2.pdf"], "merged_1.pdf")
