@@ -51,6 +51,11 @@ Telegram bot with some PDF tools.
 ## Functions
 
 > More features soon if suggested by you :)
+1) Rotate PDF Pages
+2) Merge PDFs
+3) Encrypt PDFs
+4) Decrypt PDFs
+5) Convert Images to PDF
 
 ## To-Do
 

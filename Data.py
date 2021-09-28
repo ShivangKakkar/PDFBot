@@ -8,7 +8,7 @@ Hey {}
 
 Welcome to {}
 
-I can help you to do stuff on PDFs as well as convert images to PDF.
+I can help you to do stuff on PDFs as well as convert images to PDF. Use /help to see features.
 
 JUST SEND A PDF (or an image) to get started.
 
@@ -32,9 +32,17 @@ By @StarkBots
 
     # Help Message
     HELP = """
-1) Just send a PDF to do stuff on it
+**Usage**
 
+1) Just send a PDF to do stuff on it
 2) Send images to convert to PDFs
+
+**Functions**
+1) Rotate PDF Pages
+2) Merge PDFs
+3) Encrypt PDFs
+4) Decrypt PDFs
+5) Convert Images to PDF
 """
 
     # About Message
