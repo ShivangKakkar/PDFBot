@@ -1,0 +1,7 @@
+pyrogram~=1.2.9
+TgCrypto
+SQLAlchemy~=1.4.21
+psycopg2
+PyPDF2~=1.26.0
+Pillow~=8.3.2
+pyromod~=1.5
